@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro Realizado com Sucesso</title>
+    <style>
+        .container {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            background-color: #f3f3f3;
+            padding: 10px;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        Bem-vindo(a) ao Delicia das Carnes!
+    </div>
+    <div class="content">
+        <p>Olá <span th:text="${nome}"></span>! </p>
+        <p>Seu cadastro foi realizado com sucesso.</p>
+        <p>Por favor, clique no link abaixo para verificar seu e-mail e ativar sua conta:</p>
+        <a th:href="${verificationLink}" target="_blank">Clique aqui para verificar sua conta</a>
+        <p>Se você não solicitou este cadastro, por favor, ignore este e-mail.</p>
+        <p>Atenciosamente,</p>
+        <p>Delicia das Carnes</p>
+    </div>
+</div>
+</body>
+</html>

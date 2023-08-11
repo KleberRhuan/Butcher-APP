@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Troca de Senha</title>
+      <style>
+          .header {
+              background-color: #fff;
+              padding: 20px;
+              text-align: center;
+              display: grid;
+              grid-template-columns: 1fr;
+              align-items: center;
+              justify-content: center;
+              margin-bottom: 20px;
+          }
+          .content{
+              display: grid;
+              grid-template-columns: 1fr;
+              row-gap: 20px;
+          }
+          .img{
+              max-width: 30%;
+          }
+      </style>
+</head>
+<body>
+
+   <div class="content">
+       <h1 th:text="'Olá ' + ${name} + '!'"><br/></h1>
+       <p>Aparentemente, você pediu para alterar sua senha. Para fazer isso basta seguir o link:<br/></p>
+       <a th:href="${host} +'/' + ${resetCode} + '?email=' + ${email}" th:text="${host} +'/' + ${resetCode} + '?email=' + ${email}"></a>
+       <p>Se não foi você, basta ignorar esse e-mail.</p>
+       <h2>Atenciosamente Delicia das Carnes.</h2>
+       <a th:href="${host}" th:text="${host}"></a>
+   </div>
+</body>
+</html>
