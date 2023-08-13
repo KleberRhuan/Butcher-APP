@@ -6,6 +6,7 @@ import io.github.kleberrhuan.butcherapp.domain.records.auth.AuthenticationRespon
 import io.github.kleberrhuan.butcherapp.domain.records.user.LoginData;
 import io.github.kleberrhuan.butcherapp.domain.records.user.PwResetData;
 import io.github.kleberrhuan.butcherapp.domain.records.user.RegisterData;
+import io.github.kleberrhuan.butcherapp.domain.repositories.ResetPasswordRepository;
 import io.github.kleberrhuan.butcherapp.domain.repositories.UserRepository;
 import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.BadRequestException;
 import io.github.kleberrhuan.butcherapp.infra.config.mail.EmailService;
@@ -32,6 +33,7 @@ public class AuthenticationServices {
     private final JwtServices jwtTokenServices;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final ResetPasswordRepository resetPasswordRepository;
 
     @Transactional
     public User register(RegisterData data) {
@@ -65,8 +67,8 @@ public class AuthenticationServices {
                     .token(jwtToken)
                     .build();
         } catch (Exception e) {
-            throw new InternalError("Error while authenticating user"
-                    + e.getMessage());
+            if (e.getMessage().contains("Bad credentials")) throw new BadRequestException("Invalid credentials");
+            else throw new InternalError("Error while authenticating user" + e.getMessage());
         }
     }
 
@@ -78,7 +80,7 @@ public class AuthenticationServices {
     @Transactional
     public void verifyUser(String verificationCode) {
         var user = userRepository.findByVerificationCode(verificationCode)
-                .orElseThrow();
+                .orElseThrow(() -> new BadRequestException("User not found"));
         user.setVerified();
         userRepository.save(user);
     }
@@ -88,7 +90,6 @@ public class AuthenticationServices {
                 .code(generateUUID())
                 .user(user)
                 .isUsed(false)
-                .userId(user.getId())
                 .build();
         user.setResetPasswordCode(resetPasswordCode);
     }
@@ -96,7 +97,7 @@ public class AuthenticationServices {
     @Transactional
     public void setNewPassword(PwResetData data) {
         User user = userRepository.findByEmail(data.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new BadRequestException("User not found"));
         ResetPasswordCode resetPasswordCode = user.getResetPasswordCode();
 
         if(!Objects.equals(data.code(), resetPasswordCode.getCode())) throw new BadRequestException("Invalid code");
@@ -106,22 +107,36 @@ public class AuthenticationServices {
 
         user.setPassword(encoder.encode(data.password()));
         resetPasswordCode.setIsUsed(true);
+
         userRepository.save(user);
     }
 
     @Transactional
     public void sendResetPasswordCode(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow();
+                .orElseThrow(() -> new BadRequestException("User not found"));
         ResetPasswordCode resetPasswordCode = user.getResetPasswordCode();
         if(resetPasswordCode == null || resetPasswordCode.isExpired() || resetPasswordCode.isUsed()) {
+            if (resetPasswordCode != null) removeResetPasswordCode(userEmail);
             this.generateResetPasswordCode(user);
             userRepository.save(user);
         }
     }
 
+    @Transactional
+    public void removeResetPasswordCode(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        ResetPasswordCode resetPasswordCode = user.getResetPasswordCode();
+        if(resetPasswordCode != null) {
+            user.setResetPasswordCode(null);
+            userRepository.save(user);
+            resetPasswordRepository.delete(resetPasswordCode);
+        }
+    }
+
     public boolean verifyResetPasswordCode(String code, String userEmail) {
-        User user = userRepository.findByEmail(userEmail).orElseThrow();
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BadRequestException("User not found"));
         return user.getResetCode().equals(code);
     }
 
