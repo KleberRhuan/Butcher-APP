@@ -101,7 +101,6 @@ public class AuthenticationServices {
         ResetPasswordCode resetPasswordCode = user.getResetPasswordCode();
 
         if(!Objects.equals(data.code(), resetPasswordCode.getCode())) throw new BadRequestException("Invalid code");
-
         if (resetPasswordCode.getIsUsed()) throw new BadRequestException("Code already used");
         if (resetPasswordCode.isExpired()) throw new BadRequestException("Code expired");
 
