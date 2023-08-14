@@ -2,10 +2,12 @@ package io.github.kleberrhuan.butcherapp.controllers;
 
 import io.github.kleberrhuan.butcherapp.domain.entities.Product;
 import io.github.kleberrhuan.butcherapp.domain.entities.User;
+import io.github.kleberrhuan.butcherapp.domain.records.category.CategoryCreateData;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductCreateData;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductData;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductUpdateData;
 import io.github.kleberrhuan.butcherapp.domain.repositories.UserRepository;
+import io.github.kleberrhuan.butcherapp.domain.services.CategoryServices;
 import io.github.kleberrhuan.butcherapp.domain.services.ProductServices;
 import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.ForbiddenException;
 import io.github.kleberrhuan.butcherapp.infra.security.jwt.JwtServices;
@@ -26,7 +28,10 @@ import static io.github.kleberrhuan.butcherapp.infra.config.ApplicationConfig.pr
 public class AdminController {
 
     private final ProductServices productServices;
+    private final CategoryServices categoryServices;
     private final JwtServices jwtServices;
+
+//    Products CRUD
 
     @PostMapping("/products/create")
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductCreateData data,
@@ -34,7 +39,7 @@ public class AdminController {
                                            UriComponentsBuilder uri) {
         String userEmail = jwtServices.getUsernameFromHeader(token);
         var product = productServices.createProduct(data, userEmail);
-        URI location = uri.path(prefixPath + "/events/id/{id}")
+        URI location = uri.path(prefixPath + "/products/{id}")
                 .buildAndExpand(product.id())
                 .toUri();
         return ResponseEntity.created(location).build();
@@ -53,5 +58,20 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+//    End of Products
+
+//    Categories CRUD
+
+    @PostMapping("/categories/create")
+    public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryCreateData data,
+                                           @RequestHeader("Authorization") String token,
+                                           UriComponentsBuilder uri) {
+        String userEmail = jwtServices.getUsernameFromHeader(token);
+        var product = categoryServices.create(data, userEmail);
+        URI location = uri.path(prefixPath + "/categories/{id}")
+                .buildAndExpand(product.id())
+                .toUri();
+        return ResponseEntity.created(location).build();
+    }
 
 }
