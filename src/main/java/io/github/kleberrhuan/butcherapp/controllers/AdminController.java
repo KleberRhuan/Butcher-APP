@@ -59,12 +59,6 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/products/{id}/category/{categoryId}")
-    public ResponseEntity<?> addProductCategory(@PathVariable Long id, @PathVariable Long categoryId) {
-        productServices.addCategory(id, categoryId);
-        return ResponseEntity.noContent().build();
-    }
-
 //    End of Products
 
 //    Categories CRUD

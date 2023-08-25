@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,7 @@ public class ProductServices {
         return new ProductData(product);
     }
 
-    public Double convertToCents(Double price) {
+    private Double convertToCents(Double price) {
         return price * 100;
     }
 
@@ -63,6 +64,8 @@ public class ProductServices {
         if(data.stock() != null) product.setStock(data.stock());
         if(data.price() != null) product.setPrice(convertToCents(data.price()));
         if(data.description() != null) product.setDescription(data.description());
+        if(data.categories() != null) addCategories(product, data.categories());
+
 
         productRepository.save(product);
         return new ProductData(product);
@@ -78,18 +81,16 @@ public class ProductServices {
     }
 
     @Transactional
-    public void addCategory(Long id, Long categoryId){
-        Product product = productRepository.findById(id).orElseThrow(
-                () -> new BadRequestException("Product not found")
-        );
-
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new BadRequestException("Category not found")
-        );
-
-        product.addCategory(category);
-        productRepository.save(product);
-        new ProductData(product);
+    public void addCategories(Product product, HashSet<Long> categoriesIds){
+        var categories = product.getCategoriesData();
+        for(Long id : categoriesIds){
+            Category category = categoryRepository.findById(id).orElseThrow(
+                    () -> new BadRequestException("Category not found")
+            );
+            if(!category.getIsActive()) throw new BadRequestException(category.getName() + " is inactive");
+            if(categories.contains(category)) continue;
+            product.addCategory(category);
+        }
     }
 
 

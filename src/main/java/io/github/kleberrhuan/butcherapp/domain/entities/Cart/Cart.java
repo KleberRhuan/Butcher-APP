@@ -1,12 +1,14 @@
 package io.github.kleberrhuan.butcherapp.domain.entities.Cart;
 
 import io.github.kleberrhuan.butcherapp.domain.entities.User;
+import io.github.kleberrhuan.butcherapp.domain.records.cart.CartItemData;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,6 +32,13 @@ public class Cart {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    private List<CartProduct> cartItems;
+    private Set<CartItem> cartItems = new HashSet<>();
 
+    public Set<CartItemData> getCartItemsData() {
+        Set<CartItemData> cartItemsData = new HashSet<>();
+        for (CartItem cartItem : cartItems) {
+            cartItemsData.add(new CartItemData(cartItem));
+        }
+        return cartItemsData;
+    }
 }

@@ -1,11 +1,7 @@
 package io.github.kleberrhuan.butcherapp.domain.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.github.kleberrhuan.butcherapp.domain.entities.Cart.CartProduct;
-import io.github.kleberrhuan.butcherapp.domain.records.category.CategoryData;
+import io.github.kleberrhuan.butcherapp.domain.entities.Cart.CartItem;
 import io.github.kleberrhuan.butcherapp.domain.records.category.ProductCategoryData;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,7 +48,7 @@ public class Product {
     @Column(name = "is_active", insertable = false, columnDefinition = "boolean default true")
     private Boolean isActive;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<CartProduct> cartItems;
+    private List<CartItem> cartItems;
 
     @Override
     public final boolean equals(Object o) {
@@ -80,5 +76,9 @@ public class Product {
             categoriesData.add(new ProductCategoryData(category));
         }
         return categoriesData;
+    }
+
+    public Set<Category> getCategoriesData() {
+        return new HashSet<>(categories);
     }
 }

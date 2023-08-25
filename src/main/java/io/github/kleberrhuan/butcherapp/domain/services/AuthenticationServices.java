@@ -34,6 +34,7 @@ public class AuthenticationServices {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final ResetPasswordRepository resetPasswordRepository;
+    private final CartServices cartServices;
 
     @Transactional
     public User register(RegisterData data) {
@@ -46,6 +47,7 @@ public class AuthenticationServices {
                 .build();
         var jwtToken = jwtTokenServices.generateToken(user);
         userRepository.save(user);
+        cartServices.createCart(user);
         return user;
     }
 

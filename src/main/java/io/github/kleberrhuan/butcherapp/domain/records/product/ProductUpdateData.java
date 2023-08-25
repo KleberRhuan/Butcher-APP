@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public record ProductUpdateData(
         String name,
@@ -14,6 +15,7 @@ public record ProductUpdateData(
         Integer stock,
         @Min(1)
         Double price,
+        HashSet<Long> categories,
         String description
 ) {
 }

@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CartProduct {
+public class CartItem {
     @EmbeddedId
     private CartItemKey id;
 
@@ -26,4 +26,6 @@ public class CartProduct {
     private Product product;
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;}
+    private Integer quantity;
+
+}

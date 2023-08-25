@@ -1,5 +1,6 @@
 package io.github.kleberrhuan.butcherapp.domain.entities;
 
+import io.github.kleberrhuan.butcherapp.domain.entities.Cart.Cart;
 import io.github.kleberrhuan.butcherapp.domain.enums.user.Role;
 import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.BadRequestException;
 import jakarta.annotation.Nullable;
