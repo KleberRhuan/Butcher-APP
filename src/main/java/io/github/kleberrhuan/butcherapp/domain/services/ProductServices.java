@@ -1,10 +1,12 @@
 package io.github.kleberrhuan.butcherapp.domain.services;
 
+import io.github.kleberrhuan.butcherapp.domain.entities.Category;
 import io.github.kleberrhuan.butcherapp.domain.entities.Product;
 import io.github.kleberrhuan.butcherapp.domain.entities.User;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductCreateData;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductData;
 import io.github.kleberrhuan.butcherapp.domain.records.product.ProductUpdateData;
+import io.github.kleberrhuan.butcherapp.domain.repositories.CategoryRepository;
 import io.github.kleberrhuan.butcherapp.domain.repositories.ProductRepository;
 import io.github.kleberrhuan.butcherapp.domain.repositories.UserRepository;
 import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.BadRequestException;
@@ -14,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class ProductServices {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public ProductData createProduct(ProductCreateData data, String userEmail) {
@@ -53,7 +55,11 @@ public class ProductServices {
         );
 
         if(data.name() != null) product.setName(data.name());
-        if(data.images() != null) product.setImages(new ArrayList<>(data.images()));
+        if(data.images() != null) {
+            ArrayList<String> images = new ArrayList<>(product.getImages());
+            images.addAll(data.images());
+            product.setImages(images);
+        }
         if(data.stock() != null) product.setStock(data.stock());
         if(data.price() != null) product.setPrice(convertToCents(data.price()));
         if(data.description() != null) product.setDescription(data.description());
@@ -69,6 +75,21 @@ public class ProductServices {
                 () -> new BadRequestException("Product not found")
         );
         productRepository.delete(product);
+    }
+
+    @Transactional
+    public void addCategory(Long id, Long categoryId){
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new BadRequestException("Product not found")
+        );
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new BadRequestException("Category not found")
+        );
+
+        product.addCategory(category);
+        productRepository.save(product);
+        new ProductData(product);
     }
 
 

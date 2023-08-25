@@ -1,5 +1,6 @@
 package io.github.kleberrhuan.butcherapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.kleberrhuan.butcherapp.domain.enums.category.CategoryOrder;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,7 @@ public class Category {
     private String description;
     @ManyToMany(mappedBy = "categories")
     private Set<Product> products = new LinkedHashSet<>();
-    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    @Column(name = "is_active", columnDefinition = "boolean default true", insertable = false)
     private Boolean isActive;
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "category_order", nullable = false, columnDefinition = "smallint")

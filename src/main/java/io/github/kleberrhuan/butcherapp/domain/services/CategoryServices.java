@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryServices {
+public class  CategoryServices {
 
     private final CategoryRepository repository;
     private final UserRepository userRepository;
@@ -39,7 +39,8 @@ public class CategoryServices {
             category.setParent(parent);
         }
 
-        repository.save(category);
+            repository.save(category);
+
         return new CategoryData(category);
     }
 

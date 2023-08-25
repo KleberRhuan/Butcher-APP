@@ -13,6 +13,7 @@ import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.Forbidden
 import io.github.kleberrhuan.butcherapp.infra.security.jwt.JwtServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -55,6 +56,12 @@ public class AdminController {
     @DeleteMapping("/products/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         productServices.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/products/{id}/category/{categoryId}")
+    public ResponseEntity<?> addProductCategory(@PathVariable Long id, @PathVariable Long categoryId) {
+        productServices.addCategory(id, categoryId);
         return ResponseEntity.noContent().build();
     }
 

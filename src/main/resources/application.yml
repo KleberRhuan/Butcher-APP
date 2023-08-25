@@ -1,6 +1,4 @@
 spring:
-  servlet:
-
   datasource:
     url: jdbc:postgresql://localhost:5432/butcher_application
     username: postgres

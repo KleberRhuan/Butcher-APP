@@ -1,10 +1,15 @@
 package io.github.kleberrhuan.butcherapp.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.github.kleberrhuan.butcherapp.domain.entities.Cart.CartProduct;
+import io.github.kleberrhuan.butcherapp.domain.records.category.CategoryData;
+import io.github.kleberrhuan.butcherapp.domain.records.category.ProductCategoryData;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -33,7 +38,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
     private String description;
-    @JoinColumn(name = "category_id")
+    @JoinTable(name = "products_table_categories",
+            joinColumns = @JoinColumn(name = "products_id"),
+            inverseJoinColumns = @JoinColumn(name = "categories_id"))
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Category> categories = new HashSet<>();
     @CreationTimestamp
@@ -44,6 +51,8 @@ public class Product {
     private LocalDateTime updatedAt;
     @Column(name = "is_active", insertable = false, columnDefinition = "boolean default true")
     private Boolean isActive;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<CartProduct> cartItems;
 
     @Override
     public final boolean equals(Object o) {
@@ -59,5 +68,17 @@ public class Product {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public void addCategory(Category category) {
+        categories.add(category);
+    }
+
+    public Set<ProductCategoryData> getCategories() {
+        Set<ProductCategoryData> categoriesData = new HashSet<>();
+        for (Category category : categories) {
+            categoriesData.add(new ProductCategoryData(category));
+        }
+        return categoriesData;
     }
 }

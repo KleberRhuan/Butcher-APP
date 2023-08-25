@@ -1,5 +1,6 @@
 package io.github.kleberrhuan.butcherapp.domain.records.product;
 
+import io.github.kleberrhuan.butcherapp.domain.entities.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public record ProductCreateData(
         @Min(1)
         Double price,
         @NotBlank
-        String description
+        String description,
+        List<Category> categories
 ) {
 }

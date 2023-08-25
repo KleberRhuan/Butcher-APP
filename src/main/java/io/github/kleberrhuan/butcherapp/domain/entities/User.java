@@ -2,6 +2,7 @@ package io.github.kleberrhuan.butcherapp.domain.entities;
 
 import io.github.kleberrhuan.butcherapp.domain.enums.user.Role;
 import io.github.kleberrhuan.butcherapp.infra.config.exceptions.errors.BadRequestException;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,6 +39,7 @@ public class User implements UserDetails {
     @Column(name = "verification_code")
     private String verificationCode;
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @Nullable
     private ResetPasswordCode resetPasswordCode;
     @Enumerated(EnumType.STRING)
     @Column(name = "role", insertable = false)
@@ -103,6 +105,7 @@ public class User implements UserDetails {
     }
 
     public String getResetCode() {
+        if (resetPasswordCode == null) return null;
         return resetPasswordCode.getCode();
     }
 
